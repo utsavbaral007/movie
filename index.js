@@ -9,7 +9,7 @@ const courses = [
 app.use(bodyParser.json());
 app.use(express.json());
 app.get('/api/courses', (req, res) => {
-    res.send([1,2,3]); 
+    res.send(courses); 
 });
 app.get('/api/courses/:id', (req, res) => {
    const course = courses.find(c => c.id === parseInt(req.params.id));
@@ -21,11 +21,11 @@ var isPrime = function (num){
         return true
     }
     for (var i=2; i<num; i++){
-        if (num % i == 0){
-            return false
+    if (num % i == 0){
+        return false
         }
     }
-    return true
+        return true
 }
 app.post('/api/prime', (req, res) => {
     var num = req.body.num
@@ -33,7 +33,7 @@ app.post('/api/prime', (req, res) => {
         res.send(num + 'is prime number')
     }
     else{
-        res.send(num+ 'is not prime')
+        res.send(num + 'is not prime')
     }
 })
 const port = process.env.PORT || 3000;
