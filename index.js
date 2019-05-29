@@ -1,40 +1,37 @@
-const express = require ('express');
+const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const courses = [
-    {id: 1, name: 'course1'},
-    {id: 2, name: 'course2'},
-    {id: 3, name: 'course3'}
-];
-app.use(bodyParser.json());
-app.use(express.json());
-app.get('/api/courses', (req, res) => {
-    res.send(courses); 
-});
-app.get('/api/courses/:id', (req, res) => {
-   const course = courses.find(c => c.id === parseInt(req.params.id));
-    if(!course) res.status(404).send('The book with the given ID not found');
-    res.send(course);
-});
-var isPrime = function (num){
-    if (num == 1 || num == 2){
-        return true
-    }
-    for (var i=2; i<num; i++){
-    if (num % i == 0){
-        return false
+const bcrypt = require('bcrypt')
+const mongoose = require('mongoose')
+mongoose.connect('mongodb://localhost:27017/project')
+var User = require('./model/users.js')
+const { check, validationResult } = require('express-validator/check')
+app.use(bodyParser.json())
+app.use(express.json())
+app.post('/api/signup', [
+    check('username').not().isEmpty().isLength({ min: 5 }).withMessage('Username must be of at least 5 characters'),
+    check('email', 'Enter a valid email').isEmail(),
+    check('password').not().isEmpty()
+],
+    async (req, res) => {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() })
+        } else {
+            var hashpswd = await bcrypt.hash(req.body.password, 10)
+            var result = await User.findOne({ email: req.body.email })
+            if (result) {
+                res.json({ 'email already exists': req.body.email })
+            } else {
+                var user = new User({
+                    name: req.body.username,
+                    password: hashpswd,
+                    email: req.body.email
+                })
+                user.save()
+                res.json({ 'result': user })
+            }
         }
-    }
-        return true
-}
-app.post('/api/prime', (req, res) => {
-    var num = req.body.num
-    if (isPrime(num)){
-        res.send(num + 'is prime number')
-    }
-    else{
-        res.send(num + 'is not prime')
-    }
-})
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`listening to port ${port}`));
+    })
+const port = process.env.PORT || 3000
+app.listen(port, () => console.log(`listening to port ${port}`))
