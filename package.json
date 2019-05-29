@@ -2,9 +2,10 @@
   "name": "project",
   "version": "1.0.0",
   "description": "api",
-  "main": "index.js",
+  "main": "login.js",
   "scripts": {
-    "test": "test"
+    "start": "node login.js",
+    "dev": "nodemon login.js"
   },
   "repository": {
     "type": "git",

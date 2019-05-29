@@ -3,7 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost:27017/project')
+
+mongoose.connect('mongodb://localhost:27017/project', { useNewUrlParser: true })
 var User = require('./model/users.js')
 const { check, validationResult } = require('express-validator/check')
 app.use(bodyParser.json())
@@ -28,7 +29,7 @@ app.post('/api/signup', [
                     password: hashpswd,
                     email: req.body.email
                 })
-                user.save()
+                await user.save()
                 res.json({ 'result': user })
             }
         }
