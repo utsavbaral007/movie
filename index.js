@@ -3,8 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
-
-mongoose.connect('mongodb://localhost:27017/project', { useNewUrlParser: true })
+mongoose.connect('mongodb://localhost:27017/project')
 var User = require('./model/users.js')
 const { check, validationResult } = require('express-validator/check')
 app.use(bodyParser.json())
@@ -15,6 +14,7 @@ app.post('/api/signup', [
     check('password').not().isEmpty()
 ],
     async (req, res) => {
+    
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.array() })
